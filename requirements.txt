@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+langchain
+faiss-cpu
+pymongo
+python-jose
+passlib[bcrypt]
+python-multipart
+pydantic
+python-dotenv
