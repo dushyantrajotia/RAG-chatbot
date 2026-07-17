@@ -8,3 +8,7 @@ passlib[bcrypt]
 python-multipart
 pydantic
 python-dotenv
+pypdf
+docx2txt
+langchain-google-genai
+langchain-openai

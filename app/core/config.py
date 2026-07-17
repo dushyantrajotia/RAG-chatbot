@@ -17,6 +17,8 @@ class Settings:
     
     # Environment variables
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
+
     MONGO_URI: str = os.getenv("MONGO_URI", "mongodb://localhost:27017/rag_chatbot")
     JWT_SECRET: str = os.getenv("JWT_SECRET", "your_super_secret_jwt_key_here")
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
