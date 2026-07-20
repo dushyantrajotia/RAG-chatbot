@@ -1,10 +1,12 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from app.services.rag_service import query_rag_pipeline
 from app.db.mongo import save_conversation_turn
+from app.core.security import get_current_user
 
 router = APIRouter()
+
 
 
 class ChatRequest(BaseModel):
@@ -21,7 +23,8 @@ class ChatResponse(BaseModel):
     sources: List[SourceItem] = Field(default_factory=list, description="Retrieved context sources")
 
 @router.post("/chat", response_model=ChatResponse, summary="Send message and receive RAG answer")
-def chat_endpoint(request: ChatRequest):
+def chat_endpoint(request: ChatRequest, current_user: str = Depends(get_current_user)):
+
     if not request.message.strip():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
