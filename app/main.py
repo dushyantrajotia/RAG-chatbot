@@ -31,6 +31,19 @@ app.include_router(chat_router, prefix="/api", tags=["Chat"])
 app.include_router(documents_router, prefix="/api", tags=["Documents"])
 
 
+from app.db.mongo import connect_to_mongo, close_mongo_connection
+
+@app.on_event("startup")
+def startup_db_client():
+    try:
+        connect_to_mongo()
+    except Exception as e:
+        print(f"Warning: Could not connect to MongoDB on startup: {e}")
+
+@app.on_event("shutdown")
+def shutdown_db_client():
+    close_mongo_connection()
+
 @app.get("/", tags=["Root"])
 def read_root():
     return {"message": f"Welcome to {settings.PROJECT_NAME}"}
@@ -38,4 +51,5 @@ def read_root():
 @app.get("/health", tags=["Health Check"])
 def health_check():
     return {"status": "ok"}
+
 

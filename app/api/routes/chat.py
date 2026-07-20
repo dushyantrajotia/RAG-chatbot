@@ -2,8 +2,10 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from app.services.rag_service import query_rag_pipeline
+from app.db.mongo import save_conversation_turn
 
 router = APIRouter()
+
 
 class ChatRequest(BaseModel):
     session_id: str = Field(..., description="Unique chat session identifier")
@@ -28,10 +30,19 @@ def chat_endpoint(request: ChatRequest):
         
     try:
         result = query_rag_pipeline(query=request.message, session_id=request.session_id)
+        
+        # Persist turn to MongoDB conversations collection
+        save_conversation_turn(
+            session_id=request.session_id,
+            message=request.message,
+            answer=result["answer"]
+        )
+
         return ChatResponse(
             answer=result["answer"],
             sources=result["sources"]
         )
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
