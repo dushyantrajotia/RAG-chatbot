@@ -52,3 +52,17 @@ def get_current_user(request: Request) -> str:
 
     return payload["sub"]
 
+def get_current_admin(request: Request) -> str:
+    """FastAPI dependency to verify user has an 'admin' role."""
+    email = get_current_user(request)
+    from app.db.mongo import get_users_collection
+    users_coll = get_users_collection()
+    user = users_coll.find_one({"email": email})
+    if not user or user.get("role") != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin privileges required."
+        )
+    return email
+
+

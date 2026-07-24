@@ -28,7 +28,7 @@ def connect_to_mongo() -> Database:
     
     # Ensure required collections exist
     existing_collections = mongo_manager.db.list_collection_names()
-    required_collections = ["users", "conversations", "leads", "documents"]
+    required_collections = ["users", "conversations", "leads", "documents", "feedback"]
     for collection in required_collections:
         if collection not in existing_collections:
             mongo_manager.db.create_collection(collection)
@@ -78,4 +78,34 @@ def save_conversation_turn(session_id: str, message: str, answer: str) -> Option
     except Exception as e:
         print(f"Warning: Failed to save conversation turn to MongoDB: {e}")
         return None
+
+def save_feedback(conversation_id: str, rating: str) -> bool:
+    """Stores the feedback linked to the conversation in MongoDB."""
+    try:
+        from bson import ObjectId
+        db = get_database()
+        
+        # 1. Store in feedback collection
+        feedback_coll = db["feedback"]
+        feedback_doc = {
+            "conversation_id": conversation_id,
+            "rating": rating,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+        feedback_coll.insert_one(feedback_doc)
+        
+        # 2. Link by updating conversations collection directly
+        conversations = get_conversations_collection()
+        try:
+            obj_id = ObjectId(conversation_id)
+            conversations.update_one({"_id": obj_id}, {"$set": {"feedback": rating}})
+        except Exception:
+            # If not an ObjectId, fallback to session_id
+            conversations.update_many({"session_id": conversation_id}, {"$set": {"feedback": rating}})
+            
+        return True
+    except Exception as e:
+        print(f"Warning: Failed to save feedback to MongoDB: {e}")
+        return False
+
 
