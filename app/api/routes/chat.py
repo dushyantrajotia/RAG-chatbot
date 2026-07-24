@@ -4,8 +4,11 @@ from typing import List, Optional
 from app.services.rag_service import query_rag_pipeline
 from app.db.mongo import save_conversation_turn
 from app.core.security import get_current_user
+from app.services.intent import classify_intent
+from app.services.lead_scoring import process_and_store_lead
 
 router = APIRouter()
+
 
 
 
@@ -41,10 +44,26 @@ def chat_endpoint(request: ChatRequest, current_user: str = Depends(get_current_
             answer=result["answer"]
         )
 
+        # Classify message intent & conditionally trigger lead capture for Sales / Pricing queries
+        try:
+            intent_res = classify_intent(request.message)
+            detected_intent = intent_res.get("intent", "Support")
+            
+            if detected_intent in ["Sales", "Pricing"]:
+                process_and_store_lead(
+                    session_id=request.session_id,
+                    conversation_text=request.message,
+                    intent=detected_intent
+                )
+        except Exception as le:
+            print(f"Warning: Lead scoring processing error: {le}")
+
+
         return ChatResponse(
             answer=result["answer"],
             sources=result["sources"]
         )
+
 
     except Exception as e:
         raise HTTPException(
