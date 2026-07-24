@@ -1,0 +1,14 @@
+Acme Corp Remote Work Policy
+Effective Date: January 1, 2026
+
+1. Eligibility:
+All full-time employees who have completed at least 3 months of continuous employment at Acme Corp are eligible to apply for remote work privileges. Agreement from the department manager and HR is required.
+
+2. Core Hours:
+Regardless of physical location or local timezone, all remote employees must be online, active, and responsive during Acme Corp's core business hours: 10:00 AM to 3:00 PM EST.
+
+3. Performance Standards:
+Remote employees are expected to maintain the same level of productivity and quality of work as in-office employees. Failure to meet performance targets may result in the revocation of remote work privileges.
+
+4. Workspace & Security:
+Employees must ensure a quiet, safe, and professional work environment free from distractions. All work-related communications and data access must go through the corporate VPN. Sharing company devices with family members or friends is strictly prohibited.

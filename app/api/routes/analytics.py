@@ -83,3 +83,29 @@ def get_analytics(current_admin: str = Depends(get_current_admin)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error retrieving analytics data: {str(e)}"
         )
+
+@router.get("/leads", summary="Get list of all captured leads (Admin only)")
+def get_leads(current_admin: str = Depends(get_current_admin)):
+    try:
+        leads_coll = get_leads_collection()
+        leads = list(leads_coll.find({}).sort("updated_at", -1))
+        
+        results = []
+        for lead in leads:
+            results.append({
+                "id": str(lead["_id"]),
+                "session_id": lead["session_id"],
+                "name": lead.get("name"),
+                "email": lead.get("email"),
+                "company": lead.get("company"),
+                "intent": lead.get("intent", "Sales"),
+                "score": lead.get("score", 0),
+                "updated_at": lead.get("updated_at")
+            })
+        return results
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error retrieving leads list: {str(e)}"
+        )
+

@@ -1,0 +1,14 @@
+Acme Corp Paid Time Off (PTO) and Vacation Policy
+Effective Date: January 1, 2026
+
+1. Accrual Rates:
+Full-time salaried employees accrue PTO hours on a monthly basis, totaling 20 days (160 hours) of paid vacation time per calendar year. Hourly employees accrue PTO at a rate of 1.5 hours for every 30 hours worked.
+
+2. Rollover Limit:
+A maximum of 5 days (40 hours) of unused PTO may be rolled over into the next calendar year. Any additional accrued, unused hours beyond this limit on December 31 will be forfeited ("use-it-or-lose-it" rule).
+
+3. Request & Approvals:
+All time-off requests must be submitted through the Workday portal. Requests for 3 or more consecutive days must be submitted at least 2 weeks in advance. Peak holiday periods require 4 weeks' notice.
+
+4. Sick Leave:
+Acme Corp provides 5 separate, non-accruing paid sick days per year for personal illness or caring for immediate family members. A doctor's note is required for absences exceeding 3 consecutive days.

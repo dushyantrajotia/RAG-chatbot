@@ -1,0 +1,18 @@
+Acme Corp IT Security and Data Protection Standards
+Effective Date: February 10, 2026
+
+1. Password Complexity Requirements:
+All corporate account passwords must be updated every 90 days. Passwords must be at least 14 characters in length and contain:
+- At least one uppercase letter (A-Z)
+- At least one lowercase letter (a-z)
+- At least one numerical digit (0-9)
+- At least one special symbol (e.g., !, @, #, $, %, ^, &)
+
+2. Multi-Factor Authentication (MFA):
+MFA is mandatory for all access paths to corporate networks, email accounts, and database services. The Okta Verify app is the standard authentication method. SMS-based MFA is restricted.
+
+3. Device Lockout & Inactivity:
+Laptops must be configured to automatically lock after 5 minutes of inactivity. Entering an incorrect password 5 consecutive times will lock the account for 15 minutes.
+
+4. Data Classification:
+Information must be labeled as public, internal-only, or strictly confidential. Confidential customer records must never be stored on local laptop drives; they must remain in protected cloud vaults.

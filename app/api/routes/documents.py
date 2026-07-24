@@ -4,7 +4,7 @@ from pathlib import Path
 from fastapi import APIRouter, UploadFile, File, HTTPException, status, Depends
 from pydantic import BaseModel, Field
 from app.services.ingest_service import ingest_file_to_faiss
-from app.core.security import get_current_user
+from app.core.security import get_current_admin
 
 
 router = APIRouter()
@@ -16,7 +16,7 @@ class DocumentUploadResponse(BaseModel):
     message: str = Field(..., description="Details or success message")
 
 @router.post("/documents/upload", response_model=DocumentUploadResponse, summary="Upload a document and index its chunks into FAISS")
-async def upload_document(file: UploadFile = File(...), current_user: str = Depends(get_current_user)):
+async def upload_document(file: UploadFile = File(...), current_user: str = Depends(get_current_admin)):
 
     if not file.filename:
         raise HTTPException(

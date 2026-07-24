@@ -1,0 +1,22 @@
+Acme Corp Employee Referral Bonus Program
+Effective Date: February 1, 2026
+
+1. Program Overview:
+We believe our best talent comes from referrals. Acme Corp offers cash bonuses to employees who refer qualified candidates who are subsequently hired.
+
+2. Bonus Structure:
+- Standard Positions (Associate, Analyst): $1,000 bonus
+- Specialized Technical Positions (Senior Engineers, Leads): $2,500 bonus
+- Executive Positions (Director, VP): $5,000 bonus
+
+3. Payout Schedule:
+Referral bonuses are paid in two equal installments:
+- 50% paid on the hire's first regular monthly payroll cycle.
+- 50% paid after the hire successfully completes their 6-month probationary period.
+Both the referring employee and the referred hire must be actively employed by Acme Corp at the time of payout.
+
+4. Eligibility:
+All active full-time employees are eligible, except for:
+- Members of the HR and Recruiting departments
+- Hiring managers for the specific role being filled
+- Executive staff (VPs, C-level officers)

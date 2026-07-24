@@ -104,3 +104,29 @@ def submit_feedback(request: FeedbackRequest, current_user: str = Depends(get_cu
         message="Feedback stored successfully."
     )
 
+@router.get("/chat/history/{session_id}", summary="Get conversation history for a session")
+def get_chat_history(session_id: str, current_user: str = Depends(get_current_user)):
+    try:
+        from app.db.mongo import get_conversations_collection
+        conversations = get_conversations_collection()
+        turns = list(conversations.find({"session_id": session_id}).sort("timestamp", 1))
+        
+        history = []
+        for turn in turns:
+            history.append({
+                "id": str(turn["_id"]),
+                "session_id": turn["session_id"],
+                "message": turn["message"],
+                "answer": turn["answer"],
+                "timestamp": turn["timestamp"],
+                "intent": turn.get("intent"),
+                "feedback": turn.get("feedback")
+            })
+        return history
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error retrieving history: {str(e)}"
+        )
+
+

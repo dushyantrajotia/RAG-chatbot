@@ -11,7 +11,7 @@ def get_embeddings():
         try:
             from langchain_google_genai import GoogleGenerativeAIEmbeddings
             return GoogleGenerativeAIEmbeddings(
-                model="models/embedding-001",
+                model="models/gemini-embedding-001",
                 google_api_key=gemini_key
             )
         except Exception as e:
@@ -36,7 +36,7 @@ def get_llm():
         try:
             from langchain_google_genai import ChatGoogleGenerativeAI
             return ChatGoogleGenerativeAI(
-                model="gemini-1.5-flash",
+                model="gemini-3.1-flash-lite",
                 google_api_key=gemini_key,
                 temperature=0.7
             )
@@ -110,6 +110,14 @@ Answer:"""
     })
     
     answer = response.content if hasattr(response, "content") else str(response)
+    if isinstance(answer, list):
+        text_parts = []
+        for part in answer:
+            if isinstance(part, str):
+                text_parts.append(part)
+            elif isinstance(part, dict) and "text" in part:
+                text_parts.append(part["text"])
+        answer = "".join(text_parts)
     answer_str = answer.strip()
     
     if session_id:
