@@ -10,15 +10,18 @@ app = FastAPI(
 
 # Parse FRONTEND_ORIGIN into a list of origins
 frontend_origin = settings.FRONTEND_ORIGIN
+origins = ["http://localhost:3000", "http://localhost:5173"]
 if frontend_origin:
-    origins = [origin.strip() for origin in frontend_origin.split(",") if origin.strip()]
-else:
-    origins = ["http://localhost:3000"]
+    for origin in frontend_origin.split(","):
+        cleaned = origin.strip().rstrip("/")
+        if cleaned and cleaned not in origins:
+            origins.append(cleaned)
 
-# Add CORS Middleware with allow_credentials=True for cookie-based authentication
+# Add CORS Middleware with allow_credentials=True for cookie and token authentication
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

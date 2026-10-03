@@ -1,0 +1,21 @@
+services:
+  # FastAPI Docker Backend Service on Render
+  - type: web
+    name: rag-chatbot-backend
+    runtime: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: MONGO_URI
+        sync: false # Set your MongoDB Atlas URI in Render Dashboard (or blueprint)
+      - key: GEMINI_API_KEY
+        sync: false # Set your Gemini API key in Render Dashboard
+      - key: OPENAI_API_KEY
+        sync: false # Optional: Set OpenAI key if using OpenAI fallback
+      - key: JWT_SECRET
+        generateValue: true # Render automatically generates a secure 256-bit random secret
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: FRONTEND_ORIGIN
+        value: https://your-project.vercel.app # Update with your Vercel deployment URL

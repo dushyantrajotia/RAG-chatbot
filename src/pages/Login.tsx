@@ -47,14 +47,19 @@ export const Login: React.FC = () => {
 
     try {
       if (isLogin) {
-        await axios.post('/api/auth/login', { email, password }, { withCredentials: true });
+        const loginRes = await axios.post('/api/auth/login', { email, password }, { withCredentials: true });
+        const receivedToken = loginRes.data?.token;
+        if (receivedToken) {
+          localStorage.setItem('auth_token', receivedToken);
+          axios.defaults.headers.common['Authorization'] = `Bearer ${receivedToken}`;
+        }
         setSuccess('Authentication successful! Redirecting...');
         
         // Fetch current user details
         setTimeout(async () => {
           try {
             const meResponse = await axios.get('/api/auth/me', { withCredentials: true });
-            login(meResponse.data);
+            login(meResponse.data, receivedToken);
           } catch (err: any) {
             setError(err.response?.data?.detail || 'Failed to retrieve profile.');
           } finally {

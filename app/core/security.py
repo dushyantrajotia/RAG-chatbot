@@ -39,15 +39,22 @@ def decode_access_token(token: str) -> Optional[Dict[str, Any]]:
 from fastapi import Request, HTTPException, status
 
 def get_current_user(request: Request) -> str:
-    """FastAPI dependency to extract and verify JWT from access_token cookie."""
+    """FastAPI dependency to extract and verify JWT from access_token cookie or Authorization header."""
+    token = None
     token_cookie = request.cookies.get("access_token")
-    if not token_cookie:
+    if token_cookie:
+        token = token_cookie.replace("Bearer ", "").strip()
+    else:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.replace("Bearer ", "").strip()
+
+    if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authentication cookie missing. Please log in."
+            detail="Authentication credentials missing. Please log in."
         )
 
-    token = token_cookie.replace("Bearer ", "").strip()
     payload = decode_access_token(token)
     if not payload or "sub" not in payload:
         raise HTTPException(

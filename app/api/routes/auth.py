@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from app.db.mongo import get_users_collection
 from app.core.security import hash_password, verify_password, create_access_token, decode_access_token
+from app.core.config import settings
 
 router = APIRouter()
 
@@ -21,6 +22,7 @@ class UserLoginRequest(BaseModel):
 class AuthResponse(BaseModel):
     message: str = Field(..., description="Status message")
     email: str = Field(..., description="User email address")
+    token: Optional[str] = Field(None, description="JWT access token")
 
 class UserMeResponse(BaseModel):
     name: str = Field(..., description="User display name")
@@ -76,33 +78,42 @@ def login_user(request: UserLoginRequest, response: Response):
 
     access_token = create_access_token({"sub": email})
 
-    # Prepare response with httpOnly, sameSite=lax cookie
+    # Prepare response with httpOnly, sameSite cookie and token in payload
     res = JSONResponse(
         content={
             "message": "Login successful.",
-            "email": email
+            "email": email,
+            "token": access_token
         }
     )
+    is_prod = "localhost" not in settings.FRONTEND_ORIGIN
     res.set_cookie(
         key="access_token",
         value=f"Bearer {access_token}",
         httponly=True,
-        secure=False,
-        samesite="lax",
+        secure=is_prod,
+        samesite="none" if is_prod else "lax",
         max_age=86400  # 24 hours
     )
     return res
 
-@router.get("/me", response_model=UserMeResponse, summary="Get current authenticated user info from JWT cookie")
+@router.get("/me", response_model=UserMeResponse, summary="Get current authenticated user info from JWT cookie or Authorization header")
 def get_current_user_me(request: Request):
+    token = None
     token_cookie = request.cookies.get("access_token")
-    if not token_cookie:
+    if token_cookie:
+        token = token_cookie.replace("Bearer ", "").strip()
+    else:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.replace("Bearer ", "").strip()
+
+    if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authentication cookie missing."
+            detail="Authentication credentials missing."
         )
 
-    token = token_cookie.replace("Bearer ", "").strip()
     payload = decode_access_token(token)
     if not payload or "sub" not in payload:
         raise HTTPException(
@@ -128,5 +139,10 @@ def get_current_user_me(request: Request):
 @router.post("/logout", summary="Logout user and clear JWT cookie")
 def logout_user(response: Response):
     res = JSONResponse(content={"message": "Logged out successfully."})
-    res.delete_cookie(key="access_token", samesite="lax")
+    is_prod = "localhost" not in settings.FRONTEND_ORIGIN
+    res.delete_cookie(
+        key="access_token",
+        secure=is_prod,
+        samesite="none" if is_prod else "lax"
+    )
     return res

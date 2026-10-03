@@ -7,7 +7,15 @@ import { Admin } from './pages/Admin';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 // Configure Axios defaults to support proxy-based cookie transmissions
+// Configure Axios defaults to support proxy-based cookie transmissions and base URL
 axios.defaults.withCredentials = true;
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || '';
+
+// Initialize Authorization header from localStorage if available
+const storedToken = localStorage.getItem('auth_token');
+if (storedToken) {
+  axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+}
 
 interface UserProfile {
   name: string;
@@ -18,7 +26,7 @@ interface UserProfile {
 interface AuthContextType {
   user: UserProfile | null;
   loading: boolean;
-  login: (user: UserProfile) => void;
+  login: (user: UserProfile, token?: string) => void;
   logout: () => void;
   checkAuth: () => Promise<void>;
 }
@@ -38,11 +46,17 @@ export const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   const checkAuth = async () => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
     try {
       const response = await axios.get('/api/auth/me', { withCredentials: true });
       setUser(response.data);
     } catch (err) {
       // Not authenticated or session expired
+      localStorage.removeItem('auth_token');
+      delete axios.defaults.headers.common['Authorization'];
       setUser(null);
     } finally {
       setLoading(false);
@@ -53,11 +67,17 @@ export const App: React.FC = () => {
     checkAuth();
   }, []);
 
-  const login = (userData: UserProfile) => {
+  const login = (userData: UserProfile, token?: string) => {
+    if (token) {
+      localStorage.setItem('auth_token', token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
     setUser(userData);
   };
 
   const logout = () => {
+    localStorage.removeItem('auth_token');
+    delete axios.defaults.headers.common['Authorization'];
     setUser(null);
   };
 
